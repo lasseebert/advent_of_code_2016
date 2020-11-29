@@ -22,4 +22,16 @@ defmodule Advent.Day01Test do
              |> Day01.shortest_distance() == 146
     end
   end
+
+  describe "part 2" do
+    test "example 1" do
+      assert Day01.distance_to_duplicate("R8, R4, R4, R8") == 4
+    end
+
+    test "puzzle input" do
+      assert "puzzle_inputs/day_01.txt"
+             |> File.read!()
+             |> Day01.distance_to_duplicate() == 131
+    end
+  end
 end

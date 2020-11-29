@@ -17,9 +17,17 @@ defmodule Advent.Day01 do
   R2, R2, R2 leaves you 2 blocks due South of your starting position, which is 2 blocks away.
   R5, L5, R5, R3 leaves you 12 blocks away.
   How many blocks away is Easter Bunny HQ?
+
+  --- Part Two ---
+  Then, you notice the instructions continue on the back of the Recruiting Document. Easter Bunny HQ is actually at the first location you visit twice.
+
+  For example, if your instructions are R8, R4, R4, R8, the first location you visit twice is 4 blocks away, due East.
+
+  How many blocks away is the first location you visit twice?
   """
 
   @doc """
+  Part 1:
   Finds the manhattan distance from start to end of the given path
   """
   @spec shortest_distance(String.t()) :: non_neg_integer
@@ -33,6 +41,43 @@ defmodule Advent.Day01 do
     {_end_direction, end_location} = Enum.reduce(path, init_state, &walk/2)
 
     manhattan_distance(init_location, end_location)
+  end
+
+  @doc """
+  Part 2:
+  Finds the distance from origin to the first square visited twice
+  """
+  @spec distance_to_duplicate(String.t()) :: non_neg_integer
+  def distance_to_duplicate(input) do
+    path = parse(input)
+    init_location = {0, 0}
+
+    state = %{
+      delta: {0, 1},
+      location: init_location,
+      seen: MapSet.new([init_location])
+    }
+
+    first_duplicate = find_first_duplicate(state, path)
+    manhattan_distance(init_location, first_duplicate)
+  end
+
+  defp find_first_duplicate(state, path) do
+    path
+    |> Stream.flat_map(fn {direction, amount} -> [{:turn, direction} | List.duplicate(:walk, amount)] end)
+    |> Enum.reduce_while(state, fn
+      {:turn, direction}, state ->
+        {:cont, %{state | delta: turn(direction, state.delta)}}
+
+      :walk, state ->
+        new_location = add(state.location, state.delta)
+
+        if new_location in state.seen do
+          {:halt, new_location}
+        else
+          {:cont, %{state | location: new_location, seen: MapSet.put(state.seen, new_location)}}
+        end
+    end)
   end
 
   defp walk({direction, amount}, {delta, location}) do
