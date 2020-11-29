@@ -7,7 +7,8 @@ defmodule Advent.MixProject do
       version: "0.1.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -23,6 +24,12 @@ defmodule Advent.MixProject do
     [
       {:credo, "~> 1.5", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      compile: ["compile --warnings-as-errors"]
     ]
   end
 end
